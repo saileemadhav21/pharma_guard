@@ -1,19 +1,38 @@
 import json
 from datetime import datetime
 
-import joblib
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 
 st.set_page_config(page_title="PharmaGuard - Counterfeit Risk Radar", page_icon="💊", layout="wide")
 
 
+FEATURE_LIST = ["Active_Ingredient_Pct", "Storage_Temp_Deviation", "Distributor_Credibility_Score",
+                "Packaging_Discrepancy_Flag", "Unit_Price_Discount_Pct"]
+
+
 @st.cache_resource
 def load():
-    return (joblib.load("model.joblib"), json.load(open("metrics.json")),
-            pd.read_csv("data/pharma_batches_scored.csv"))
+    # The model is re-trained here at start-up (takes ~2 seconds) instead of loading a saved
+    # model file, so it always matches the scikit-learn version installed on the server.
+    df = pd.read_csv("data/pharma_batches.csv")
+    model = Pipeline([
+        ("impute", SimpleImputer(strategy="median")),
+        ("clf", RandomForestClassifier(n_estimators=300, max_depth=8, min_samples_leaf=5,
+                                       class_weight="balanced_subsample", random_state=42))])
+    model.fit(df[FEATURE_LIST], df["Is_Counterfeit"])
+    bundle = {
+        "model": model,
+        "features": FEATURE_LIST,
+        "reference": df[df["Is_Counterfeit"] == 0][FEATURE_LIST].median().to_dict(),
+        "importances": dict(zip(FEATURE_LIST, model.named_steps["clf"].feature_importances_.tolist())),
+    }
+    return bundle, json.load(open("metrics.json")), pd.read_csv("data/pharma_batches_scored.csv")
 
 
 bundle, metrics, scored = load()
