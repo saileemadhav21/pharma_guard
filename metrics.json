@@ -1,0 +1,56 @@
+{
+  "Logistic Regression (baseline)": {
+    "roc_auc": 0.828,
+    "pr_auc": 0.694,
+    "recall": 0.692,
+    "precision": 0.4,
+    "f1": 0.507,
+    "recall_top10pct": 0.679,
+    "cv_pr_auc": 0.735,
+    "confusion": {
+      "TN": 841,
+      "FP": 81,
+      "FN": 24,
+      "TP": 54
+    }
+  },
+  "Random Forest (final)": {
+    "roc_auc": 0.817,
+    "pr_auc": 0.684,
+    "recall": 0.641,
+    "precision": 0.746,
+    "f1": 0.69,
+    "recall_top10pct": 0.679,
+    "cv_pr_auc": 0.727,
+    "confusion": {
+      "TN": 905,
+      "FP": 17,
+      "FN": 28,
+      "TP": 50
+    }
+  },
+  "tiers": {
+    "Low": {
+      "batches": 4503,
+      "counterfeit_rate": 0.023
+    },
+    "Moderate": {
+      "batches": 203,
+      "counterfeit_rate": 0.153
+    },
+    "High": {
+      "batches": 294,
+      "counterfeit_rate": 0.871
+    }
+  },
+  "capacity_curve": {
+    "0.02": 0.241,
+    "0.05": 0.592,
+    "0.1": 0.736,
+    "0.15": 0.764,
+    "0.2": 0.79,
+    "0.3": 0.815,
+    "0.5": 0.854,
+    "1.0": 1.0
+  }
+}
